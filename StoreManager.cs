@@ -20,11 +20,17 @@ namespace StoreManager
 
     }
 
+    //interface IStoreManager
+    //{
+    //    string primaryKey(StoreAdapter _adapter);
+    //    void setParams(StoreAdapter _adapter);
+    //    string primaryKeyFilter();
+    //}
+
     public abstract class StoreManager<T>
     {
         private const int MAX_BATCH_READ = 2000000;
 
-        protected T record;
         public Filter filter;
         public int querySize;
         private string orderBy = null;
@@ -38,10 +44,6 @@ namespace StoreManager
 
         public List<T> qryResult;
 
-        public virtual Type type()
-        {
-            throw new NotImplementedException();
-        }
 
         public StoreManager()
         {
@@ -56,28 +58,16 @@ namespace StoreManager
         }
         public StoreManager(T _record)
         {
-            record = _record;
+            setRecord(_record);
         }
         public virtual T factory()
         {
-            throw new NotImplementedException();
+            return read(dbAdapter);
         }
-        public virtual void setRecord(T _record)
-        {
-            record = _record;
-        }
-        public virtual string primaryKeyFilter()
-        {
-            throw new NotImplementedException();
-        }
-        public virtual string masterKey()
-        {
-            throw new NotImplementedException();
-        }
-        public T recordObject()
-        {
-            return record;
-        }
+
+        public abstract void setRecord(T _record);
+        public abstract T recordObject();
+
 
         // -------------------------------------------------------------------------------------
         // connect
@@ -284,21 +274,10 @@ namespace StoreManager
         {
             return null;
         }
-        public virtual string primaryKey(StoreAdapter _adapter)
-        {
-            throw new NotImplementedException();
-        }
-        public virtual void setParams(StoreAdapter _adapter)
-        {
-            throw new NotImplementedException();
-        }
-        public virtual T read(StoreAdapter _adapter)
-        {
-            throw new NotImplementedException();
-        }
+
         public virtual string set(T _record)
         {
-            record = _record;
+            setRecord(_record);
             return set();
         }
 
@@ -422,7 +401,7 @@ namespace StoreManager
         // -------------------------------------------------------------------------------------
         protected virtual string delCmd()
         {
-            return dbAdapter.delCmd(this, record);
+            return dbAdapter.delCmd(this, recordObject());
         }
         public virtual int del(T _rec)
         {
@@ -433,7 +412,7 @@ namespace StoreManager
         {
             try
             {
-                connect(dbAdapter.delCmd(this, record));
+                connect(dbAdapter.delCmd(this, recordObject()));
                 dbAdapter.open();
                 dbAdapter.executeNonQuery();
             }
@@ -503,5 +482,11 @@ namespace StoreManager
                 return false;
             return exists(pkFilter);
         }
+
+        public abstract string primaryKey(StoreAdapter _adapter);
+        public abstract void setParams(StoreAdapter _adapter);
+        public abstract string primaryKeyFilter();
+        public abstract T read(StoreAdapter _adapter);
+
     }
 }
