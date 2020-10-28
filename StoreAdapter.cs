@@ -114,7 +114,7 @@ namespace StoreManager
             return false;
         }
         public abstract string delCmd<T>(StoreManager<T> _model);
-        public abstract string getCmd<T>(StoreManager<T> _model, string _primaryKeyFilter);
+        public abstract string getCmd<T>(StoreManager<T> _model);
         public abstract string qryCmd<T>(StoreManager<T> _model);
         public abstract string insertCmd<T>(StoreManager<T> _model);
         public abstract string updateCmd<T>(StoreManager<T> _model);

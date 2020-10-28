@@ -171,10 +171,10 @@ namespace StoreManager
         {
             return SqlReader.Bool(reader, _tag);
         }
-        public override string getCmd<T>(StoreManager<T> _model, string _primaryKeyFilter)
+        public override string getCmd<T>(StoreManager<T> _model)
         {
             // stop deleting this tmp var, i need it for debugging!!
-            string cmd = string.Format("select top 1 * from [{0}] where {1}", _model.sqlObjectForGet(), _primaryKeyFilter);
+            string cmd = string.Format("select top 1 * from [{0}] where {1}", _model.sqlObjectForGet(), _model.primaryKeyFilter());
             return cmd;
         }
         public override string delCmd<T>(StoreManager<T> _model)

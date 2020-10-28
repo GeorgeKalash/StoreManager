@@ -56,11 +56,11 @@ namespace StoreManager
         {
             closeConnection();
         }
-        public virtual T factory()
+        protected virtual T factory()
         {
             return read(dbAdapter);
         }
-        public virtual void setKeys(object _keys) { }
+
 
         // -------------------------------------------------------------------------------------
         // connect
@@ -104,13 +104,7 @@ namespace StoreManager
         {
             return orderBy;
         }
-        protected virtual void runExpensiveCode()
-        {
-        }
 
-        protected virtual void setFields()
-        {
-        }
 
         public void setFields(string[] fields)
         {
@@ -169,9 +163,6 @@ namespace StoreManager
             return _qry;
         }
 
-        public virtual void getCompleted()
-        {
-        }
 
         public virtual List<T> qry()
         {
@@ -259,15 +250,10 @@ namespace StoreManager
         {
             return dbAdapter.setCmd(this, ref trxMode);
         }
-        public virtual string postInsertCmd()
-        {
-            return null;
-        }
-        public virtual string postUpdateCmd()
-        {
-            return null;
-        }
-        public abstract void setRecord(T _record);
+
+
+        
+        
         public virtual string set(T _record)
         {
             setRecord(_record);
@@ -350,7 +336,7 @@ namespace StoreManager
         {
             if (_primaryKeyFilter == null)
                 _primaryKeyFilter = primaryKeyFilter();
-            return dbAdapter.getCmd(this, _primaryKeyFilter);
+            return dbAdapter.getCmd(this);
         }
 
         public virtual T get(T _rec)
@@ -414,7 +400,7 @@ namespace StoreManager
                 closeConnection();
             }
 
-            return 0;
+            return 1;
         }
 
         // -------------------------------------------------------------------------------------
@@ -475,15 +461,23 @@ namespace StoreManager
                 return false;
             return exists(pkFilter);
         }
-        public abstract string primaryKey(StoreAdapter _adapter);
-        public abstract void setParams(StoreAdapter _adapter);
-        public virtual void setParams(StoreAdapter _adapter, T _object) { }
+
         public abstract string primaryKeyFilter();
-        public abstract T read(StoreAdapter _adapter);
-        public virtual void read(StoreAdapter _adapter, T _object) { }
+
+        protected virtual void setParams(StoreAdapter _adapter, T _object) {}
+        protected virtual void read(StoreAdapter _adapter, T _object) {}
+        protected virtual void setKeys(object _keys) {}
+        protected virtual void runExpensiveCode() {}
+        protected virtual void setFields() {}
+        protected virtual void getCompleted() {}
+
+        protected abstract string primaryKey(StoreAdapter _adapter);
+        protected abstract void setParams(StoreAdapter _adapter);
+        protected abstract T read(StoreAdapter _adapter);
         protected abstract void deserialize(string _json);
         protected abstract object recordInstance();
         protected abstract string masterKey();
+        protected abstract void setRecord(T _record);
 
     }
 }
