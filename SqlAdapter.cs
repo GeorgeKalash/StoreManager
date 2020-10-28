@@ -177,7 +177,7 @@ namespace StoreManager
             string cmd = string.Format("select top 1 * from [{0}] where {1}", _model.sqlObjectForGet(), _primaryKeyFilter);
             return cmd;
         }
-        public override string delCmd<T>(StoreManager<T> _model, T _record)
+        public override string delCmd<T>(StoreManager<T> _model)
         {
             return string.Format("delete from {0} where {1}", _model.dataObject(), _model.primaryKeyFilter());
         }

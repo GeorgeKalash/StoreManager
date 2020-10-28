@@ -113,7 +113,7 @@ namespace StoreManager
 
             return false;
         }
-        public abstract string delCmd<T>(StoreManager<T> _model, T _record);
+        public abstract string delCmd<T>(StoreManager<T> _model);
         public abstract string getCmd<T>(StoreManager<T> _model, string _primaryKeyFilter);
         public abstract string qryCmd<T>(StoreManager<T> _model);
         public abstract string insertCmd<T>(StoreManager<T> _model);
@@ -127,12 +127,6 @@ namespace StoreManager
                     throw new Exception("DATA_OBJECT_NOT_SET");
                 return _model.setObject();
             }
-
-            T recordObject = _model.recordObject();
-
-            if (recordObject == null)
-                return null;
-
             if (_model.exists())
             {
                 _trxMode = TrxMode.UPDATE;

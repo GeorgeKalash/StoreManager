@@ -4,4 +4,5 @@ C:\SourceCode\StoreManager\obj\Debug\StoreManager.dll
 C:\SourceCode\StoreManager\obj\Debug\StoreManager.pdb
 C:\SourceCode\Extensions\StoreManager.dll
 C:\SourceCode\Extensions\StoreManager.pdb
+C:\SourceCode\StoreManager\obj\Debug\StoreManager.csproj.CoreCompileInputs.cache
 C:\SourceCode\StoreManager\obj\Debug\StoreManager.csprojAssemblyReference.cache

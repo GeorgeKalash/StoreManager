@@ -56,18 +56,11 @@ namespace StoreManager
         {
             closeConnection();
         }
-        public StoreManager(T _record)
-        {
-            setRecord(_record);
-        }
         public virtual T factory()
         {
             return read(dbAdapter);
         }
-
-        public abstract void setRecord(T _record);
-        public abstract T recordObject();
-
+        public virtual void setKeys(object _keys) { }
 
         // -------------------------------------------------------------------------------------
         // connect
@@ -274,7 +267,7 @@ namespace StoreManager
         {
             return null;
         }
-
+        public abstract void setRecord(T _record);
         public virtual string set(T _record)
         {
             setRecord(_record);
@@ -401,7 +394,7 @@ namespace StoreManager
         // -------------------------------------------------------------------------------------
         protected virtual string delCmd()
         {
-            return dbAdapter.delCmd(this, recordObject());
+            return dbAdapter.delCmd(this);
         }
         public virtual int del(T _rec)
         {
@@ -412,7 +405,7 @@ namespace StoreManager
         {
             try
             {
-                connect(dbAdapter.delCmd(this, recordObject()));
+                connect(dbAdapter.delCmd(this));
                 dbAdapter.open();
                 dbAdapter.executeNonQuery();
             }
@@ -482,11 +475,15 @@ namespace StoreManager
                 return false;
             return exists(pkFilter);
         }
-
         public abstract string primaryKey(StoreAdapter _adapter);
         public abstract void setParams(StoreAdapter _adapter);
+        public virtual void setParams(StoreAdapter _adapter, T _object) { }
         public abstract string primaryKeyFilter();
         public abstract T read(StoreAdapter _adapter);
+        public virtual void read(StoreAdapter _adapter, T _object) { }
+        protected abstract void deserialize(string _json);
+        protected abstract object recordInstance();
+        protected abstract string masterKey();
 
     }
 }
