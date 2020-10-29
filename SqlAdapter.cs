@@ -318,11 +318,18 @@ namespace StoreManager
             {
                 if (field.isPrimaryKey)
                 {
+                    if (field.value == null)
+                        return null; // new identity object
+
+                    string fieldValue = field.value.ToString();
+                    
                     if (returnValue != string.Empty)
                         returnValue += " and ";
-                    if (field.GetType() == typeof(string))
-                        field.value = string.Format("'{0}'", field.value);
-                    returnValue += string.Format("{0} = {1}", field.name, field.value);
+                    
+                    Type fieldType = field.value.GetType();
+                    if (fieldType == typeof(string))
+                        fieldValue = string.Format("'{0}'", fieldValue);
+                    returnValue += string.Format("{0} = {1}", field.name, fieldValue);
                 }
             }
             return returnValue;

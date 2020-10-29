@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 
 namespace StoreManager
 {
@@ -37,7 +38,6 @@ namespace StoreManager
 
         public List<T> qryResult;
 
-
         public StoreManager()
         {
         }
@@ -51,8 +51,8 @@ namespace StoreManager
         }
         protected virtual T factory()
         {
-            T obj = new T();           
-            read(dbAdapter, obj);
+            T obj = new T();
+            read(obj);
             return obj;
         }
 
@@ -241,18 +241,9 @@ namespace StoreManager
         {
             return setObj;
         }
-        public virtual string setCmd()
+        public virtual string setCmd(ref TrxMode trxMode)
         {
             return dbAdapter.setCmd(this, ref trxMode);
-        }
-
-
-        
-        
-        public virtual string set(T _record)
-        {
-            setRecord(_record);
-            return set();
         }
 
         public virtual bool ruleCheck()
@@ -260,15 +251,16 @@ namespace StoreManager
             return true;
         }
 
-        public virtual string set()
+        public virtual string set(T _record)
         {
             try
             {
                 if (ruleCheck() == true)
                 {
                     dbAdapter.clearParams();
-                    setParams(dbAdapter);
-                    string cmd = setCmd();
+                    setParams(_record);
+                    TrxMode trxMode = TrxMode.INSERT;
+                    string cmd = setCmd(ref trxMode);
                     if (cmd != null)
                     {
                         connect(cmd);
@@ -276,7 +268,7 @@ namespace StoreManager
                         if (dbAdapter.execute())
                         {
                             if (dbAdapter.read())
-                                return primaryKey(dbAdapter);
+                                return primaryKey(_record);
                         }
                     }
                 }
@@ -327,29 +319,17 @@ namespace StoreManager
         {
             return getObj == null ? dataObj : getObj;
         }
-        protected virtual string getCmd(string _primaryKeyFilter = null)
+        private string getCmd()
         {
-            if (_primaryKeyFilter == null)
-                _primaryKeyFilter = primaryKeyFilter();
             return dbAdapter.getCmd(this);
         }
 
-        public virtual T get(T _rec)
-        {
-            setRecord(_rec);
-            return get(primaryKeyFilter());
-        }
-
-        public virtual T get()
-        {
-            return get(primaryKeyFilter());
-        }
-
-        public virtual T get(string _primaryKeyFilter)
+        public virtual T get(object _keys)
         {
             try
             {
-                connect(getCmd(_primaryKeyFilter));
+                setPrimaryKeys(_keys);
+                connect(getCmd());
                 {
                     dbAdapter.open();
                     dbAdapter.execute();
@@ -377,15 +357,12 @@ namespace StoreManager
         {
             return dbAdapter.delCmd(this);
         }
-        public virtual int del(T _rec)
-        {
-            setRecord(_rec);
-            return del();
-        }
-        public virtual int del()
+        public virtual int del(T _record)
         {
             try
             {
+                dbAdapter.clearParams();
+                setParams(_record);
                 connect(dbAdapter.delCmd(this));
                 dbAdapter.open();
                 dbAdapter.executeNonQuery();
@@ -435,9 +412,6 @@ namespace StoreManager
                 throw new Exception("DATA_OBJECT_NOT_SET");
             string sqlCmd = string.Format("select [qrySize] = count(*) from {0}", obj);
 
-            if (_filter == null)
-                _filter = primaryKeyFilter();
-
             if (_filter != string.Empty)
                 sqlCmd += string.Format(" where {0}", _filter);
 
@@ -466,22 +440,27 @@ namespace StoreManager
             return dbAdapter.primaryKeyFilter();
         }
 
-        public virtual void setKeys(object _keys) { }
-        public virtual void setKeys(StoreAdapter _adapter, T _object) { }
+        protected virtual void setRecordKeys(object _keys)
+        {
+            throw new NotImplementedException();
+        }
 
-        protected virtual void setParams(StoreAdapter _adapter, T _object) {}
-        protected virtual void read(StoreAdapter _adapter, T _object) {}
+        protected void addPrimaryKey(string _parameterName, object _parameterValue, bool _isMandatory)
+        {
+            dbAdapter.addParameter(_parameterName, _parameterValue, _isMandatory, _isPrimaryKey: true);
+        }
+        protected void addParameter(string _parameterName, object _parameterValue, bool _isMandatory)
+        {
+            dbAdapter.addParameter(_parameterName, _parameterValue, _isMandatory, _isPrimaryKey : false);
+        }
+        protected abstract void setPrimaryKeys(object _key);
+        protected abstract void setPrimaryKeys(T _object);
+        protected abstract void setParams(T _object);
+        protected abstract void read(T _object);
         protected virtual void runExpensiveCode() {}
         protected virtual void setFields() {}
         protected virtual void getCompleted() {}
-
-        protected abstract string primaryKey(StoreAdapter _adapter);
-        protected abstract void setParams(StoreAdapter _adapter);
-        protected abstract T read(StoreAdapter _adapter);
-        protected abstract void deserialize(string _json);
-        protected abstract T recordInstance();
-        protected abstract string masterKey();
-        protected abstract void setRecord(T _record);
-
+        protected virtual string primaryKey(T _object) { return string.Empty; }
+        protected virtual string masterKey(T _object) { return string.Empty; }
     }
 }
