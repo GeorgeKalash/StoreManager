@@ -463,10 +463,10 @@ namespace StoreManager
         }
 
         public abstract string primaryKeyFilter();
+        public virtual void setKeys(object _keys) { }
 
         protected virtual void setParams(StoreAdapter _adapter, T _object) {}
         protected virtual void read(StoreAdapter _adapter, T _object) {}
-        protected virtual void setKeys(object _keys) {}
         protected virtual void runExpensiveCode() {}
         protected virtual void setFields() {}
         protected virtual void getCompleted() {}
