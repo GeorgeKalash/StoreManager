@@ -229,18 +229,22 @@ namespace StoreManager
         // -------------------------------------------------------------------------------------
         // set
         // -------------------------------------------------------------------------------------
+
         public virtual string dataObject()
         {
             return dataObj;
         }
+
         public virtual string getObject()
         {
-            return getObj == null ? dataObject() : getObj;
+            return getObj == null ? dataObj : getObj;
         }
+
         public virtual string setObject()
         {
             return setObj;
         }
+
         public virtual string setCmd(ref TrxMode trxMode)
         {
             return dbAdapter.setCmd(this, ref trxMode);
@@ -251,14 +255,14 @@ namespace StoreManager
             return true;
         }
 
-        public virtual string set(T _record)
+        public virtual string set(T _object)
         {
             try
             {
                 if (ruleCheck() == true)
                 {
                     dbAdapter.clearParams();
-                    setParams(_record);
+                    setParams(_object);
                     TrxMode trxMode = TrxMode.INSERT;
                     string cmd = setCmd(ref trxMode);
                     if (cmd != null)
@@ -268,7 +272,7 @@ namespace StoreManager
                         if (dbAdapter.execute())
                         {
                             if (dbAdapter.read())
-                                return primaryKey(_record);
+                                return primaryKey(_object);
                         }
                     }
                 }
@@ -279,6 +283,7 @@ namespace StoreManager
             }
             return null;
         }
+
         public virtual bool setArray(List<T> _array)
         {
             try
@@ -295,6 +300,7 @@ namespace StoreManager
 
             return false;
         }
+
         public virtual bool delArray(List<T> _array)
         {
             try
@@ -315,21 +321,23 @@ namespace StoreManager
         // -------------------------------------------------------------------------------------
         // get
         // -------------------------------------------------------------------------------------
+        
         public virtual string sqlObjectForGet()
         {
             return getObj == null ? dataObj : getObj;
         }
-        private string getCmd()
-        {
-            return dbAdapter.getCmd(this);
-        }
+
+        //private string getCmd()
+        //{
+        //    return dbAdapter.getCmd(this);
+        //}
 
         public virtual T get(object _keys)
         {
             try
             {
                 setPrimaryKeys(_keys);
-                connect(getCmd());
+                connect(dbAdapter.getCmd(this));
                 {
                     dbAdapter.open();
                     dbAdapter.execute();
@@ -353,16 +361,18 @@ namespace StoreManager
         // -------------------------------------------------------------------------------------
         // del
         // -------------------------------------------------------------------------------------
-        protected virtual string delCmd()
-        {
-            return dbAdapter.delCmd(this);
-        }
-        public virtual int del(T _record)
+        
+        //protected virtual string delCmd()
+        //{
+        //    return dbAdapter.delCmd(this);
+        //}
+
+        public virtual int del(T _object)
         {
             try
             {
                 dbAdapter.clearParams();
-                setParams(_record);
+                setPrimaryKeys(_object);
                 connect(dbAdapter.delCmd(this));
                 dbAdapter.open();
                 dbAdapter.executeNonQuery();
@@ -429,20 +439,10 @@ namespace StoreManager
 
         public bool exists()
         {
-            string pkFilter = primaryKeyFilter();
+            string pkFilter = dbAdapter.primaryKeyFilter();
             if (pkFilter == null)
                 return false;
             return exists(pkFilter);
-        }
-
-        private string primaryKeyFilter()
-        {
-            return dbAdapter.primaryKeyFilter();
-        }
-
-        protected virtual void setRecordKeys(object _keys)
-        {
-            throw new NotImplementedException();
         }
 
         protected void addPrimaryKey(string _parameterName, object _parameterValue, bool _isMandatory)
