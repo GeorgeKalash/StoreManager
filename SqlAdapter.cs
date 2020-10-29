@@ -174,12 +174,12 @@ namespace StoreManager
         public override string getCmd<T>(StoreManager<T> _model)
         {
             // stop deleting this tmp var, i need it for debugging!!
-            string cmd = string.Format("select top 1 * from [{0}] where {1}", _model.sqlObjectForGet(), _model.primaryKeyFilter());
+            string cmd = string.Format("select top 1 * from [{0}] where {1}", _model.sqlObjectForGet(), primaryKeyFilter());
             return cmd;
         }
         public override string delCmd<T>(StoreManager<T> _model)
         {
-            return string.Format("delete from {0} where {1}", _model.dataObject(), _model.primaryKeyFilter());
+            return string.Format("delete from {0} where {1}", _model.dataObject(), primaryKeyFilter());
         }
 
         public override string qryCmd<T>(StoreManager<T> _model)
@@ -255,7 +255,7 @@ namespace StoreManager
             if (dataObject == null)
                 throw new Exception("DATA_OBJECT_NOT_SET ");
 
-            return string.Format("update [{0}] set {1} where {2}", dataObject, keyValues, _model.primaryKeyFilter());
+            return string.Format("update [{0}] set {1} where {2}", dataObject, keyValues, primaryKeyFilter());
 
         }
 
@@ -309,6 +309,23 @@ namespace StoreManager
                 throw new Exception("DATA_OBJECT_NOT_SET");
 
             return string.Format("insert into {0} ({1}) values ({2})", dataObject, commaSeparatedParams, commaSeparatedValues);
+        }
+
+        public override string primaryKeyFilter()
+        {
+            string returnValue = string.Empty;
+            foreach (Field field in fields)
+            {
+                if (field.isPrimaryKey)
+                {
+                    if (returnValue != string.Empty)
+                        returnValue += " and ";
+                    if (field.GetType() == typeof(string))
+                        field.value = string.Format("'{0}'", field.value);
+                    returnValue += string.Format("{0} = {1}", field.name, field.value);
+                }
+            }
+            return returnValue;
         }
     }
 }

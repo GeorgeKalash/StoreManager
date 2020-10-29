@@ -20,14 +20,7 @@ namespace StoreManager
 
     }
 
-    //interface IStoreManager
-    //{
-    //    string primaryKey(StoreAdapter _adapter);
-    //    void setParams(StoreAdapter _adapter);
-    //    string primaryKeyFilter();
-    //}
-
-    public abstract class StoreManager<T>
+    public abstract class StoreManager<T> where T : new()
     {
         private const int MAX_BATCH_READ = 2000000;
 
@@ -48,7 +41,7 @@ namespace StoreManager
         public StoreManager()
         {
         }
-        public StoreManager(StoreAdapter _dbAdapter)
+        public StoreManager(StoreAdapter _dbAdapter) : this()
         {
             dbAdapter = _dbAdapter;
         }
@@ -58,7 +51,9 @@ namespace StoreManager
         }
         protected virtual T factory()
         {
-            return read(dbAdapter);
+            T obj = new T();           
+            read(dbAdapter, obj);
+            return obj;
         }
 
 
@@ -427,10 +422,12 @@ namespace StoreManager
         {
             dbAdapter.runBatch(_sqlBatch);
         }
+
         public virtual int run()
         {
             return 0;
         }
+
         public virtual int recordCount(string _filter)
         {
             string obj = getObject();
@@ -449,11 +446,13 @@ namespace StoreManager
             closeConnection();
             return _ == null ? 0 : (int)_;
         }
+
         public bool exists(string _filter = null)
         {
             int? _ = recordCount(_filter);
             return _ == null ? false : _ > 0;
         }
+
         public bool exists()
         {
             string pkFilter = primaryKeyFilter();
@@ -462,8 +461,13 @@ namespace StoreManager
             return exists(pkFilter);
         }
 
-        public abstract string primaryKeyFilter();
+        private string primaryKeyFilter()
+        {
+            return dbAdapter.primaryKeyFilter();
+        }
+
         public virtual void setKeys(object _keys) { }
+        public virtual void setKeys(StoreAdapter _adapter, T _object) { }
 
         protected virtual void setParams(StoreAdapter _adapter, T _object) {}
         protected virtual void read(StoreAdapter _adapter, T _object) {}
@@ -475,7 +479,7 @@ namespace StoreManager
         protected abstract void setParams(StoreAdapter _adapter);
         protected abstract T read(StoreAdapter _adapter);
         protected abstract void deserialize(string _json);
-        protected abstract object recordInstance();
+        protected abstract T recordInstance();
         protected abstract string masterKey();
         protected abstract void setRecord(T _record);
 

@@ -53,6 +53,8 @@ namespace StoreManager
         public abstract void executeNonQuery();
         public abstract bool read();
         public abstract bool hasRows();
+        public abstract string primaryKeyFilter();
+
         public abstract void init(string _cmd);
         public virtual void runBatch(string _sqlBatch) { }
 
@@ -113,13 +115,13 @@ namespace StoreManager
 
             return false;
         }
-        public abstract string delCmd<T>(StoreManager<T> _model);
-        public abstract string getCmd<T>(StoreManager<T> _model);
-        public abstract string qryCmd<T>(StoreManager<T> _model);
-        public abstract string insertCmd<T>(StoreManager<T> _model);
-        public abstract string updateCmd<T>(StoreManager<T> _model);
+        public abstract string delCmd<T>(StoreManager<T> _model) where T : new();
+        public abstract string getCmd<T>(StoreManager<T> _model) where T : new();
+        public abstract string qryCmd<T>(StoreManager<T> _model) where T : new();
+        public abstract string insertCmd<T>(StoreManager<T> _model) where T : new();
+        public abstract string updateCmd<T>(StoreManager<T> _model) where T : new();
 
-        public string setCmd<T>(StoreManager<T> _model, ref TrxMode _trxMode)
+        public string setCmd<T>(StoreManager<T> _model, ref TrxMode _trxMode) where T : new()
         {
             if (executionType == ExecutionType.STORED_PROCEDURE)
             {
