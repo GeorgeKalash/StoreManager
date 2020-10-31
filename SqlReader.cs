@@ -90,6 +90,8 @@ namespace StoreManager
         {
             try
             {
+                string field1 = _reader.GetName(0);
+
                 object tmp = _reader[_tag];
 
                 if (tmp == DBNull.Value)

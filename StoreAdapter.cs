@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StoreManager
 {
@@ -45,6 +46,30 @@ namespace StoreManager
         {
             executionType = _executionType;
         }
+
+        public object primaryKeys()
+        {
+            List<Field> filteredFields = fields.Where(x => x.isPrimaryKey == true).ToList();
+
+            if (filteredFields.Count == 0)
+                return null;
+
+            if (filteredFields.Count == 1)
+                return filteredFields[0];
+
+            object[] keys = new object[filteredFields.Count];
+
+            int idx = 0;
+
+            foreach (Field key in filteredFields)
+            {
+                keys[idx] = key.value;
+                idx++;
+            }
+
+            return keys;
+        }
+
         public void setConnectionString(string _connectionString) { connectionString = _connectionString; }
         public abstract void close();
         public abstract void connect();

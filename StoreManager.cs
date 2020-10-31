@@ -269,11 +269,8 @@ namespace StoreManager
                     {
                         connect(cmd);
                         dbAdapter.open();
-                        if (dbAdapter.execute())
-                        {
-                            if (dbAdapter.read())
-                                return primaryKey(_object);
-                        }
+                        dbAdapter.execute();
+                        return identityInsert(_object);
                     }
                 }
             }
@@ -417,10 +414,10 @@ namespace StoreManager
 
         public virtual int recordCount(string _filter)
         {
-            string obj = getObject();
-            if (obj == null)
+            string dataObjectName = getObject();
+            if (dataObjectName == null)
                 throw new Exception("DATA_OBJECT_NOT_SET");
-            string sqlCmd = string.Format("select [qrySize] = count(*) from {0}", obj);
+            string sqlCmd = string.Format("select [qrySize] = count(*) from {0}", dataObjectName);
 
             if (_filter != string.Empty)
                 sqlCmd += string.Format(" where {0}", _filter);
@@ -460,6 +457,15 @@ namespace StoreManager
         protected virtual void runExpensiveCode() {}
         protected virtual void setFields() {}
         protected virtual void getCompleted() {}
+
+        
+        protected virtual string identityInsert(T _object) 
+        {
+            return null;
+        }
+
+
+
         protected virtual string primaryKey(T _object) { return string.Empty; }
         protected virtual string masterKey(T _object) { return string.Empty; }
     }
