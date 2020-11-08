@@ -101,6 +101,13 @@ namespace StoreManager
 
         public virtual void addField(string _parameterName, object _parameterValue, bool _isPrimaryKey)
         {
+            if (fields.Exists(x => x.name == _parameterName))
+            {
+                Field f = fields.First(x => x.name == _parameterName);
+                f.value = _parameterValue;
+                f.isPrimaryKey = _isPrimaryKey;
+                return;
+            }
             fields.Add(new Field() { name = _parameterName, value = _parameterValue, isPrimaryKey = _isPrimaryKey });
         }
 
@@ -141,8 +148,8 @@ namespace StoreManager
             return false;
         }
         public abstract string delCmd<T>(StoreManager<T> _model) where T : new();
-        public abstract string getCmd<T>(StoreManager<T> _model) where T : new();
-        public abstract string qryCmd<T>(StoreManager<T> _model) where T : new();
+        public abstract string getCmd<T>(ViewManager<T> _model) where T : new();
+        public abstract string qryCmd<T>(ViewManager<T> _model) where T : new();
         public abstract string insertCmd<T>(StoreManager<T> _model) where T : new();
         public abstract string updateCmd<T>(StoreManager<T> _model) where T : new();
 

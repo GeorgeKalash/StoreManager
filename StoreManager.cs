@@ -21,41 +21,43 @@ namespace StoreManager
 
     }
 
-    public abstract class StoreManager<T> where T : new()
+    public abstract class ViewManager<T> where T : new()
     {
         private const int MAX_BATCH_READ = 2000000;
 
-        public Filter filter;
-        public int querySize;
-        private string orderBy = null;
-        public StoreAdapter dbAdapter;
-
         protected string dataObj = null;
-        protected string setObj = null;
         protected string getObj = null;
 
-        public TrxMode trxMode;
+        public Filter filter;
+        public int querySize;
+        protected string orderBy = null;
+        public StoreAdapter dbAdapter;
 
         public List<T> qryResult;
 
-        public StoreManager()
+        public ViewManager()
         {
         }
-        public StoreManager(StoreAdapter _dbAdapter) : this()
-        {
-            dbAdapter = _dbAdapter;
-        }
-        ~StoreManager()
+        ~ViewManager()
         {
             closeConnection();
         }
+        public void closeConnection()
+        {
+            dbAdapter.close();
+        }
+
+        protected virtual void getCompleted() { }
+        protected abstract void read(T _object);
+        protected virtual void runExpensiveCode() { }
+        protected virtual void setFields() { }
+
         protected virtual T factory()
         {
             T obj = new T();
             read(obj);
             return obj;
         }
-
 
         // -------------------------------------------------------------------------------------
         // connect
@@ -69,14 +71,11 @@ namespace StoreManager
         {
             dbAdapter.open();
         }
-        public void closeConnection()
-        {
-            dbAdapter.close();
-        }
         public void setExecutionType(ExecutionType _executionType)
         {
             dbAdapter.setExecutionType(_executionType);
         }
+
         // -------------------------------------------------------------------------------------
         // qry
         // -------------------------------------------------------------------------------------
@@ -99,7 +98,6 @@ namespace StoreManager
         {
             return orderBy;
         }
-
 
         public void setFields(string[] fields)
         {
@@ -227,6 +225,67 @@ namespace StoreManager
         }
 
         // -------------------------------------------------------------------------------------
+        // get
+        // -------------------------------------------------------------------------------------
+
+        public virtual string sqlObjectForGet()
+        {
+            return getObj == null ? dataObj : getObj;
+        }
+
+        protected virtual string getCmd()
+        {
+            return dbAdapter.getCmd(this);
+        }
+
+        protected abstract void setPrimaryKeys(object _key);
+
+        public virtual T get(object _keys)
+        {
+            try
+            {
+                setPrimaryKeys(_keys);
+                connect(getCmd());
+                {
+                    dbAdapter.open();
+                    dbAdapter.execute();
+                    if (dbAdapter.read())
+                    {
+                        runExpensiveCode();
+                        T value = factory();
+                        getCompleted();
+                        return value;
+                    }
+                }
+            }
+            finally
+            {
+                closeConnection();
+            }
+
+            return default(T);
+        }
+
+    }
+
+    public abstract class StoreManager<T> : ViewManager<T> where T : new()
+    {
+        protected string setObj = null;
+        public TrxMode trxMode;      
+
+        public StoreManager()
+        {
+        }
+        public StoreManager(StoreAdapter _dbAdapter) : this()
+        {
+            dbAdapter = _dbAdapter;
+        }
+        ~StoreManager()
+        {
+            closeConnection();
+        }
+
+        // -------------------------------------------------------------------------------------
         // set
         // -------------------------------------------------------------------------------------
 
@@ -315,45 +374,6 @@ namespace StoreManager
             return false;
         }
 
-        // -------------------------------------------------------------------------------------
-        // get
-        // -------------------------------------------------------------------------------------
-        
-        public virtual string sqlObjectForGet()
-        {
-            return getObj == null ? dataObj : getObj;
-        }
-
-        //private string getCmd()
-        //{
-        //    return dbAdapter.getCmd(this);
-        //}
-
-        public virtual T get(object _keys)
-        {
-            try
-            {
-                setPrimaryKeys(_keys);
-                connect(dbAdapter.getCmd(this));
-                {
-                    dbAdapter.open();
-                    dbAdapter.execute();
-                    if (dbAdapter.read())
-                    {
-                        runExpensiveCode();
-                        T value = factory();
-                        getCompleted();
-                        return value;
-                    }
-                }
-            }
-            finally
-            {
-                closeConnection();
-            }
-
-            return default(T);
-        }
 
         // -------------------------------------------------------------------------------------
         // del
@@ -450,21 +470,14 @@ namespace StoreManager
         {
             dbAdapter.addParameter(_parameterName, _parameterValue, _isMandatory, _isPrimaryKey : false);
         }
-        protected abstract void setPrimaryKeys(object _key);
         protected abstract void setPrimaryKeys(T _object);
         protected abstract void setParams(T _object);
-        protected abstract void read(T _object);
-        protected virtual void runExpensiveCode() {}
-        protected virtual void setFields() {}
-        protected virtual void getCompleted() {}
 
-        
+
         protected virtual string identityInsert(T _object) 
         {
             return null;
         }
-
-
 
         protected virtual string primaryKey(T _object) { return string.Empty; }
         protected virtual string masterKey(T _object) { return string.Empty; }

@@ -171,7 +171,7 @@ namespace StoreManager
         {
             return SqlReader.Bool(reader, _tag);
         }
-        public override string getCmd<T>(StoreManager<T> _model)
+        public override string getCmd<T>(ViewManager<T> _model)
         {
             // stop deleting this tmp var, i need it for debugging!!
             string cmd = string.Format("select top 1 * from [{0}] where {1}", _model.sqlObjectForGet(), primaryKeyFilter());
@@ -182,7 +182,7 @@ namespace StoreManager
             return string.Format("delete from {0} where {1}", _model.dataObject(), primaryKeyFilter());
         }
 
-        public override string qryCmd<T>(StoreManager<T> _model)
+        public override string qryCmd<T>(ViewManager<T> _model)
         {
             string whereClause = _model.filterString();
             string orderClause = _model.orderString();
