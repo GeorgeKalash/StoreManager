@@ -7,7 +7,7 @@ namespace StoreManager
     public class SqlAdapter : StoreAdapter
     {
         SqlConnection connection;
-        SqlCommand cmd;
+        readonly SqlCommand cmd;
         SqlDataReader reader;
 
         public SqlAdapter() : base()
@@ -76,7 +76,7 @@ namespace StoreManager
                         throw new Exception("EMPTY_MANDATORY_FIELD " + _parameterName);
                 }
                 if (executionType == ExecutionType.STORED_PROCEDURE)
-                    cmd.Parameters.AddWithValue(_parameterName, _parameterValue == null ? DBNull.Value : _parameterValue);
+                    cmd.Parameters.AddWithValue(_parameterName, _parameterValue ?? DBNull.Value);
                 else
                     base.addField(_parameterName, _parameterValue, _isPrimaryKey);
             }
@@ -145,7 +145,7 @@ namespace StoreManager
                 Type u = Nullable.GetUnderlyingType(typeof(T));
                 int? i = Integer(_tag);
                 if (i == null)
-                    return default(T);
+                    return default;
                 return (T)Convert.ChangeType(i, u);
             }
             string _ = String(_tag);
