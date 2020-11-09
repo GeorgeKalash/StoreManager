@@ -384,12 +384,12 @@ namespace StoreManager
         //    return dbAdapter.delCmd(this);
         //}
 
-        public virtual int del(T _object)
+        public virtual int del(object _keys)
         {
             try
             {
                 dbAdapter.clearParams();
-                setPrimaryKeys(_object);
+                setPrimaryKeys(_keys);
                 connect(dbAdapter.delCmd(this));
                 dbAdapter.open();
                 dbAdapter.executeNonQuery();
