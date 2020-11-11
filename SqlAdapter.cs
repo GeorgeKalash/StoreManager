@@ -329,7 +329,7 @@ namespace StoreManager
                     Type fieldType = field.value.GetType();
                     if (fieldType == typeof(string))
                         fieldValue = string.Format("'{0}'", fieldValue);
-                    returnValue += string.Format("{0} = {1}", field.name, fieldValue);
+                    returnValue += string.Format("[{0}] = {1}", field.name, fieldValue);
                 }
             }
             return returnValue;
