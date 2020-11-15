@@ -39,9 +39,10 @@ namespace StoreManager
 
             private string stringValue()
             {
+                if (value is Enum)
+                    return Convert.ToInt32(value).ToString();
                 if (value.GetType() != typeof(DateTime))
                     return value.ToString();
-
                 return ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss");
             }
             public string clause()

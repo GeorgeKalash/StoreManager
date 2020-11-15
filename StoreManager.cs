@@ -432,6 +432,11 @@ namespace StoreManager
             return 0;
         }
 
+        public int recordCount(Filter f)
+        {
+            return recordCount(f.filterString());
+        }
+
         public virtual int recordCount(string _filter)
         {
             string dataObjectName = getObject();
