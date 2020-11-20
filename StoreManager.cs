@@ -230,7 +230,7 @@ namespace StoreManager
 
         public virtual string sqlObjectForGet()
         {
-            return getObj == null ? dataObj : getObj;
+            return getObj ?? dataObj;
         }
 
         protected virtual string getCmd()
@@ -263,7 +263,7 @@ namespace StoreManager
                 closeConnection();
             }
 
-            return default(T);
+            return default;
         }
 
     }
@@ -296,7 +296,7 @@ namespace StoreManager
 
         public virtual string getObject()
         {
-            return getObj == null ? dataObj : getObj;
+            return getObj ?? dataObj;
         }
 
         public virtual string setObject()
