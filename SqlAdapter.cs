@@ -29,10 +29,9 @@ namespace StoreManager
             }
             if (connection.State == ConnectionState.Open)
             {
-                connection.Dispose();
                 connection.Close();
+                connection.Dispose();
             }
-
         }
 
         public override void connect()

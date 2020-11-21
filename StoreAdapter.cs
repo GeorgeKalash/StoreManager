@@ -184,6 +184,9 @@ namespace StoreManager
                 return "N'" + ((DateTime)_value).ToString("yyyy-MM-dd HH:mm:ss") + "'";
             }
 
+            if (_value is Enum)
+                return Convert.ToInt16(_value).ToString();
+
             if (type == typeof(int) || type == typeof(double) || type == typeof(short))
                 return _value.ToString();
             if (type == typeof(bool))
