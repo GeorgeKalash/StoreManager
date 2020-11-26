@@ -108,6 +108,10 @@ namespace StoreManager
                 f.isPrimaryKey = _isPrimaryKey;
                 return;
             }
+
+            if (_parameterValue is Enum)
+                _parameterValue = Convert.ToInt16(_parameterValue);
+
             fields.Add(new Field() { name = _parameterName, value = _parameterValue, isPrimaryKey = _isPrimaryKey });
         }
 

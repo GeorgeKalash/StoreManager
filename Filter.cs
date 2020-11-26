@@ -152,7 +152,7 @@ namespace StoreManager
             try
             {
                 Object val = value(_key);
-                return val == null ? null : val.ToString();
+                return val?.ToString();
             }
             catch
             {

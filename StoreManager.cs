@@ -456,7 +456,7 @@ namespace StoreManager
         public bool exists(string _filter = null)
         {
             int? _ = recordCount(_filter);
-            return _ == null ? false : _ > 0;
+            return _ != null && _ > 0;
         }
 
         public bool exists()
