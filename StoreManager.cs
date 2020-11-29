@@ -21,7 +21,38 @@ namespace StoreManager
 
     }
 
-    public abstract class ViewManager<T> where T : new()
+    public abstract class DataSourceManager
+    {
+        public StoreAdapter dbAdapter;
+        public void connect(String _cmd)
+        {
+            dbAdapter.connect();
+            dbAdapter.init(_cmd);
+        }
+        public void closeConnection()
+        {
+            dbAdapter.close();
+        }
+
+        public virtual StoreAdapter exec(string _cmd, bool _disconnectWhenDone = false)
+        {
+            try
+            {
+                connect(_cmd);
+                dbAdapter.open();
+                dbAdapter.execute();
+                dbAdapter.read();
+                if (_disconnectWhenDone)
+                    closeConnection();
+            }
+            finally
+            {
+            }
+            return dbAdapter;
+        }
+    }
+
+    public abstract class ViewManager<T> : DataSourceManager where T : new()
     {
         private const int MAX_BATCH_READ = 2000000;
 
@@ -31,7 +62,6 @@ namespace StoreManager
         public Filter filter;
         public int querySize;
         protected string orderBy = null;
-        public StoreAdapter dbAdapter;
 
         public List<T> qryResult;
 
@@ -41,10 +71,6 @@ namespace StoreManager
         ~ViewManager()
         {
             closeConnection();
-        }
-        public void closeConnection()
-        {
-            dbAdapter.close();
         }
 
         protected virtual void getCompleted() { }
@@ -62,11 +88,6 @@ namespace StoreManager
         // -------------------------------------------------------------------------------------
         // connect
         // -------------------------------------------------------------------------------------
-        public void connect(String _cmd)
-        {
-            dbAdapter.connect();
-            dbAdapter.init(_cmd);
-        }
         public void open()
         {
             dbAdapter.open();
@@ -402,26 +423,6 @@ namespace StoreManager
             return 1;
         }
 
-        // -------------------------------------------------------------------------------------
-        // exec
-        // -------------------------------------------------------------------------------------
-
-        public virtual StoreAdapter exec(string _cmd, bool _disconnectWhenDone = false)
-        {
-            try
-            {
-                connect(_cmd);
-                dbAdapter.open();
-                dbAdapter.execute();
-                dbAdapter.read();
-                if (_disconnectWhenDone)
-                    closeConnection();
-            }
-            finally
-            {
-            }
-            return dbAdapter;
-        }
         public void runBatch(string _sqlBatch)
         {
             dbAdapter.runBatch(_sqlBatch);

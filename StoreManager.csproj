@@ -46,6 +46,7 @@
     <Compile Include="Filter.cs" />
     <Compile Include="SqlAdapter.cs" />
     <Compile Include="SqlReader.cs" />
+    <Compile Include="SqlWrap.cs" />
     <Compile Include="StoreAdapter.cs" />
     <Compile Include="StoreManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
