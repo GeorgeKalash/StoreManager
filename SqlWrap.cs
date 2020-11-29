@@ -57,6 +57,17 @@ namespace StoreManager
             return value;
         }
 
+        public static int? maxInt(DataSourceManager _mgr, string _fieldName, string _objectName, string _whereCondition = null)
+        {
+            string sqlCmd = string.Format("select {0} = max({0}) from {1}", _fieldName, _objectName);
+            if (_whereCondition != null)
+                sqlCmd += " where " + _whereCondition;
+            StoreAdapter reader = _mgr.exec(sqlCmd);
+            int? value = reader.hasRows() == false ? null : reader.Integer(_fieldName);
+            reader.close();
+            return value;
+        }
+
         public static object objectValue(DataSourceManager _mgr, string _fieldName, string _cmd)
         {
             StoreAdapter reader = _mgr.exec(_cmd);
