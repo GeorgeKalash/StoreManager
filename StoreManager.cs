@@ -193,31 +193,32 @@ namespace StoreManager
             setFilter(_filter);
             return qry();
         }
-        public List<T> pageFromList(List<T> _list, PageData _page)
+
+        public static List<T> extract(List<T> _list, PageData _page)
         {
             List<T> page = new List<T>();
-
-            if (_list == null)
+            
+            if (_list == null || _list.Count == 0)
                 return page;
 
-            querySize = _list.Count;
-
-            if (querySize == 0)
-                return page;
-
-            if (_page.startAt > querySize)
+            int size = _list.Count;
+            if (_page.startAt > size)
                 return page;
 
             int pageEnd = _page.startAt + _page.pageSize;
 
-            if (pageEnd > querySize)
-                pageEnd = querySize;
+            if (pageEnd > size)
+                pageEnd = size;
 
             for (int idx = _page.startAt; idx < pageEnd; idx++)
                 page.Add(_list[idx]);
+            return page;
+        }
 
-            page = pageCompleted(page);
-
+        public List<T> pageFromList(List<T> _list, PageData _page)
+        {
+            querySize = _list.Count;
+            List<T> page = extract(_list, _page);
             return page;
         }
         public virtual List<T> qryPage(PageData _page)
@@ -230,7 +231,11 @@ namespace StoreManager
 
             List<T> list = qry();
 
-            return pageFromList(list, _page);
+            List<T> page = pageFromList(list, _page);
+
+            page = pageCompleted(page);
+
+            return page;
         }
 
         public List<T> qryPage(Filter _filter, PageData _page)
