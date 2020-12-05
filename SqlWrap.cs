@@ -62,12 +62,15 @@ namespace StoreManager
             string sqlCmd = string.Format("select {0} = max({0}) from {1}", _fieldName, _objectName);
             if (_whereCondition != null)
                 sqlCmd += " where " + _whereCondition;
-            StoreAdapter reader = _mgr.exec(sqlCmd);
-            int? value = reader.hasRows() == false ? null : reader.Integer(_fieldName);
-            reader.close();
-            return value;
+            return intValue(_mgr, _fieldName, sqlCmd);
         }
-
+        public static int? minInt(DataSourceManager _mgr, string _fieldName, string _objectName, string _whereCondition = null)
+        {
+            string sqlCmd = string.Format("select {0} = min({0}) from {1}", _fieldName, _objectName);
+            if (_whereCondition != null)
+                sqlCmd += " where " + _whereCondition;
+            return intValue(_mgr, _fieldName, sqlCmd);
+        }
         public static object objectValue(DataSourceManager _mgr, string _fieldName, string _cmd)
         {
             StoreAdapter reader = _mgr.exec(_cmd);
