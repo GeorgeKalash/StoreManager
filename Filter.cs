@@ -25,8 +25,6 @@ namespace StoreManager
 
     public class Filter
     {
-        public const string START_DATE = "startDate";
-        public const string END_DATE = "endDate";
         private class FilterExpression
         {
             public string key;
@@ -203,6 +201,11 @@ namespace StoreManager
         public virtual void deserialize()
         {
 
+        }
+
+        public bool hasData()
+        {
+            return filters.Count > 0 || expressions.Count > 0;
         }
         public virtual string filterString()
         {
