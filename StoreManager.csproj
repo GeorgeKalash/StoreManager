@@ -33,6 +33,10 @@
     <NoWarn>IDE1006</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SharedClasses, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Extensions\SharedClasses.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
