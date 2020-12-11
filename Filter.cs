@@ -6,11 +6,12 @@ namespace StoreManager
 {
     public class Filter
     {
-        private class FilterExpression
+        internal class FilterExpression
         {
             public string key;
             public string oper;
             public object value;
+            public string parentObject;
 
             public FilterExpression()
             {
@@ -26,6 +27,9 @@ namespace StoreManager
             }
             public string clause()
             {
+                if (parentObject != null)
+                    return null;
+
                 string formattedValue = stringValue();
 
                 if (value == null || value.ToString() == string.Empty || value.ToString() == "0")
@@ -56,6 +60,17 @@ namespace StoreManager
         private readonly Dictionary<string, object> parameters;
         private readonly List<string> filters;
         private readonly List<FilterExpression> expressions;
+
+        public Filter createParentFilter(string _parentObject)
+        {
+            Filter f = new Filter();
+            foreach (FilterExpression filterExpression in expressions)
+            {
+                if (filterExpression.parentObject == _parentObject)
+                    f.add(filterExpression.key, filterExpression.oper, filterExpression.value);
+            }
+            return f;
+        }
 
 
         public Filter()
@@ -144,12 +159,12 @@ namespace StoreManager
                 filters.Add("(" + _clause + ")");
         }
 
-        public void add(string _key, string _oper, object _value)
+        public void add(string _key, string _oper, object _value, string _parentObject = null)
         {
             if (_value != null)
             {
                 add(_key, _value);
-                expressions.Add(new FilterExpression() { key = _key, oper = _oper, value = _value });
+                expressions.Add(new FilterExpression() { key = _key, oper = _oper, value = _value, parentObject = _parentObject });
             }
         }
         public void remove(string _key, string _oper)
