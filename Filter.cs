@@ -1,11 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using SharedClasses;
 
 namespace StoreManager
 {
-    public class Filter
+    [Serializable]
+    public class Filter : ISerializable
     {
+        public const int ALL = 0;
+        private Dictionary<string, object> parameters;
+        private List<string> filters;
+        private List<FilterExpression> expressions;
+
+        [Serializable]
         internal class FilterExpression
         {
             public string key;
@@ -56,11 +64,6 @@ namespace StoreManager
 
         }
 
-        public const int ALL = 0;
-        private readonly Dictionary<string, object> parameters;
-        private readonly List<string> filters;
-        private readonly List<FilterExpression> expressions;
-
         public Filter createParentFilter(string _parentObject)
         {
             Filter f = new Filter();
@@ -80,6 +83,13 @@ namespace StoreManager
             parameters = new Dictionary<string, object>();
         }
 
+        protected Filter(SerializationInfo info, StreamingContext context) : this()
+        {
+            filters = (List<string>) info.GetValue("filters", typeof(List<string>));
+            expressions = (List<FilterExpression>) info.GetValue("expressions", typeof(List<FilterExpression>));
+            parameters = (Dictionary<string, object>) info.GetValue("parameters", typeof(Dictionary<string, object>));
+
+        }
 
         public Filter(Filter _copyFrom)
         {
@@ -251,15 +261,13 @@ namespace StoreManager
             return _filter.Trim(charsToTrim);
         }
 
-        public object Clone()
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            throw new NotImplementedException();
+            info.AddValue("expressions", expressions);
+            info.AddValue("filters", filters);
+            info.AddValue("parameters", parameters);
         }
 
-        //public Filter where(string _dataObject)
-        //{
-        //    foreach(pARA)
-        //}
     }
 
 }
