@@ -61,9 +61,8 @@ namespace StoreManager
             string sqlCmd = string.Format("select {0} = max({0}) from {1}", _fieldName, _objectName);
             if (_whereCondition != null)
                 sqlCmd += " where " + _whereCondition;
-            return stringValue(_mgr, sqlCmd, _fieldName);
+            return objectValue(_mgr, _fieldName, sqlCmd).ToString();
         }
-
         public static int? maxInt(DataSourceManager _mgr, string _fieldName, string _objectName, string _whereCondition = null)
         {
             string sqlCmd = string.Format("select {0} = max({0}) from {1}", _fieldName, _objectName);
