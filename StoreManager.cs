@@ -419,6 +419,7 @@ namespace StoreManager
                 connect(dbAdapter.delCmd(this));
                 dbAdapter.open();
                 dbAdapter.executeNonQuery();
+                dbAdapter.clearParams();
             }
             finally
             {

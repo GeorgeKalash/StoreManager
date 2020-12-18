@@ -198,36 +198,6 @@ namespace StoreManager
             return cmd;
         }
 
-        //public override void runBatch(string _sqlBatch)
-        //{
-        //    connect();
-        //    // Server server = new Server(new ServerConnection(connectionString));
-        //    Server server = new Server(new ServerConnection(connection));
-        //    try
-        //    {
-        //        connection.Open();
-        //    }
-        //    catch (SqlException ex)
-        //    {
-        //        Exception _ = new Exception(ErrorId.SQL_BATCH_RUN_ERROR, string.Format("{0}, {1}", ex.Message, ex.Source));
-        //        throw _;
-        //    }
-
-        //    try
-        //    {
-        //        server.ConnectionContext.ExecuteNonQuery(_sqlBatch);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Exception _2 = 
-        //        throw new Exception(ErrorId.SQL_BATCH_RUN_ERROR, string.Format("{0}, {1}", ex.Message, ex.Source));
-        //    }
-        //    finally
-        //    {
-        //        connection.Close();
-        //    }
-        //}
-
         private string formatFieldName(string _fieldName)
         {
             return "[" + _fieldName + "]";
