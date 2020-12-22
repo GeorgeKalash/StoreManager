@@ -159,6 +159,7 @@ namespace StoreManager
             }
             querySize = qryResult.Count;
             qryResult = qryCompleted(qryResult);
+            dbAdapter.clearParams();
             return qryResult;
         }
         protected virtual string qryCmd()
@@ -272,17 +273,17 @@ namespace StoreManager
             {
                 setPrimaryKeys(_keys);
                 connect(getCmd());
+                dbAdapter.open();
+                dbAdapter.execute();
+                if (dbAdapter.read())
                 {
-                    dbAdapter.open();
-                    dbAdapter.execute();
-                    if (dbAdapter.read())
-                    {
-                        runExpensiveCode();
-                        T value = factory();
-                        getCompleted();
-                        return value;
-                    }
+                    runExpensiveCode();
+                    T value = factory();
+                    getCompleted();
+                    dbAdapter.clearParams();
+                    return value;
                 }
+                dbAdapter.clearParams();
             }
             finally
             {
