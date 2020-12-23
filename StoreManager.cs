@@ -119,7 +119,6 @@ namespace StoreManager
         {
             return orderBy;
         }
-
         public void setFields(string[] fields)
         {
             foreach (string fieldName in fields)
