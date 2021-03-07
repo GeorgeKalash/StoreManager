@@ -208,11 +208,6 @@ namespace StoreManager
         {
 
         }
-
-        public bool hasData()
-        {
-            return filters.Count > 0 || expressions.Count > 0;
-        }
         public virtual string filterString()
         {
             if (filters.Count == 0 && expressions.Count == 0)
